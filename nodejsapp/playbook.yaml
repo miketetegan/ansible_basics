@@ -19,7 +19,7 @@
     tasks:
     - name: Create linux user
     user:
-      name: node
+      name: node  # Create user node to start the app with its privileges
       comment: node app #comment
       group: admin
 
@@ -27,7 +27,7 @@
 # Play 3
   - name: deploy nodejs app
     hosts: vm_servers
-    become: True #False by default
+    become: True #False by default . It enables you to change between users when running tasks
     become_user: node #become user node before executing tasks bellow
     vars_files:
       - vars_values.yaml #specify value file
