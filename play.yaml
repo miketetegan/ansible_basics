@@ -1,13 +1,13 @@
 # Example of a play
 # To create a variable: {{ var_name }}
 
+# Play 1
 - name : rename table, set owner and truncate it  # Play name
   hosts: databases     # Where to apply the play
   remote_user: root    # User the play gets executed as
   vars:                # Define variables values
     tablename: users
     tableowner: admin
-
   tasks:
     - name: Rename table {{ tablename }} to clients   # task name
       postgresql_table:    # Name of the module used
@@ -23,3 +23,18 @@
       postgresql_table:
         table: {{ tablename }}
         truncate: yes
+
+
+# Play 2
+- name: Configure nginx web server
+  hosts: webserver
+  tasks:
+  - name: install nginx
+    apt:   # Module used to install apt packages
+      name: nginx  # Use nginx = <version> to install a specific version: 1.18.1 or 1.18*
+      state: latest 
+      
+  - name: start nginx server
+    service:    # Module used to manage states of a service
+      name: nginx
+      state: started
