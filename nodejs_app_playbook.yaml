@@ -1,0 +1,55 @@
+---
+# Play 1
+- name: deploy java app
+  hosts: vm_servers
+  tasks:
+  - name: Update apt repo and cache
+    apt:
+      name: update_cache=yes force_apt_get=yes cache_valid_time=3600
+  - name: install node and npm
+    apt: #apt module
+      pkg:
+        - node
+        - npm
+
+
+# Play 2
+  - name: Create new linux user for node app
+    hosts: vm_servers
+    tasks:
+    - name: Create linux user
+    user:
+      name: node
+      comment: node app #comment
+      group: admin
+
+
+# Play 3
+  - name: deploy nodejs app
+    hosts: vm_servers
+    become: True #False by default
+    become_user: node #become user node before executing tasks bellow
+    vars_files:
+      - vars_values.yaml #specify value file
+    tasks:
+    - name: copy nodejs folder to server
+      copy:
+        src: /root/nodejsapp.tgz #from ansible host
+        dest: /home/node/app.tgz #to managed host
+    - name: unpack the nodejs file
+      unarchive: #by default take source from the local machine
+#You can use only unarchive witout copying first the package to the remote server
+        src: /home/node/app.tgz
+        dest: /home/node/
+        remote_src: yes #specify the path is on the remote server
+    - name: Install dependencies
+      npm: #recommended to use full name of modules
+        path: /home/node/package.json
+    - name: start the app
+      command: node /home/node/app #flexible , have other way of execution
+      async: 1000
+      poll: 0
+    - name: Ensure app is running
+      shell: #can use advanced operators like | > & $ENV but command is more secure
+      register: app_status #assign the output to a variable
+    - debug: msg={{app_status.stdout_lines}} #module that prints the variable value
