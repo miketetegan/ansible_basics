@@ -8,7 +8,7 @@
       name: update_cache=yes force_apt_get=yes cache_valid_time=3600
   - name: install node and npm
     apt: #apt module
-      pkg:
+      pkg:  # Install multiple packages 
         - node
         - npm
 
@@ -38,18 +38,18 @@
         dest: /home/node/app.tgz #to managed host
     - name: unpack the nodejs file
       unarchive: #by default take source from the local machine
-#You can use only unarchive witout copying first the package to the remote server
+#You can use unarchive without the copy module 
         src: /home/node/app.tgz
         dest: /home/node/
-        remote_src: yes #specify the path is on the remote server
+        remote_src: yes #specify the src path is on the remote server
     - name: Install dependencies
       npm: #recommended to use full name of modules
         path: /home/node/package.json
     - name: start the app
       command: node /home/node/app #flexible , have other way of execution
       async: 1000
-      poll: 0
+      poll: 0 # Run a task and move to the next without waiting for a result 
     - name: Ensure app is running
       shell: #can use advanced operators like | > & $ENV but command is more secure
       register: app_status #assign the output to a variable
-    - debug: msg={{app_status.stdout_lines}} #module that prints the variable value
+    - debug: msg={{ app_status.stdout_lines }} #module that prints the variable value
