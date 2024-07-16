@@ -1,0 +1,25 @@
+# Example of a play
+# To create a variable: {{ var_name }}
+
+- name : rename table, set owner and truncate it  # Play name
+  hosts: databases     # Where to apply the play
+  remote_user: root    # User the play gets executed as
+  vars:                # Define variables values
+    tablename: users
+    tableowner: admin
+
+  tasks:
+    - name: Rename table {{ tablename }} to clients   # task name
+      postgresql_table:    # Name of the module used
+        table: {{ tablename }}
+        rename: clients
+
+    - name: Set owner to admin
+      postgresql_table:
+        table: {{ tablename }}
+        owner: admin
+
+    - name: Truncate table
+      postgresql_table:
+        table: {{ tablename }}
+        truncate: yes
